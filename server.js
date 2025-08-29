@@ -8,24 +8,19 @@ import errorHandler from './middlewares/error.handler.js';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors({credentials: true, origin: true }));
-// Middleware for JSON parsing
-app.use(express.json());    
-app.use(errorHandler);
+app.use(cors({ credentials: true, origin: true }));
+app.use(express.json());
 
 connectDB();
-
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: "Something went wrong!" });
-});
 
 app.use('/api/books', bookRoutes);   
 
 app.get('/', (req, res) => {
-    res.send('Hello World!');
-});     
+  res.status(200).json({ success: true, message: "Hello World!" });
+});
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
