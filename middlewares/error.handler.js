@@ -1,10 +1,15 @@
 const errorHandler = (err, req, res, next) => {
-  console.error("Error:", err.stack);
+  console.error("Error:", err);
 
-  res.status(500).json({
+  const statusCode = res.statusCode && res.statusCode !== 200 ? res.statusCode : 500;
+
+  res.status(statusCode).json({
     success: false,
-    message: "Something went wrong!",
-    error: err.message
+    message: process.env.NODE_ENV === "production"
+      ? "Something went wrong!" 
+      : err.message,           
+    ...(process.env.NODE_ENV !== "production" && { stack: err.stack }) 
+    
   });
 };
 
