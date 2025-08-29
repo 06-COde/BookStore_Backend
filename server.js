@@ -22,15 +22,12 @@ app.get('/', (req, res) => {
 });
 
 const startServer = async () => {
-  await connectDB();
-
   if (cluster.isPrimary) {
-    console.log(`🔹 Primary with pid ${process.pid} is running`);
-
+    console.log(`Primary with pid ${process.pid} is running`);
+    await connectDB();
     for (let i = 0; i < totalCpus; i++) {
       cluster.fork();
     }
-
     cluster.on('exit', (worker) => {
       console.error(`Worker ${worker.process.pid} died. Restarting...`);
       cluster.fork();
@@ -38,7 +35,7 @@ const startServer = async () => {
   } else {
     const server = http.createServer(app);
     server.listen(PORT, () => {
-      console.log(` Worker ${process.pid} is listening on http://localhost:${PORT}`);
+      console.log(`Worker ${process.pid} is listening on http://localhost:${PORT}`);
     });
   }
 };
