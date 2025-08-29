@@ -7,10 +7,13 @@ import errorHandler from './middlewares/error.handler.js';
 import http from 'http';
 import os from 'os';
 import cluster from 'cluster';
+import { validateEnv } from './config/envValidator.js';
 
 const totalCpus = os.cpus().length;
 const PORT = process.env.PORT || 5000;
 const app = express();
+
+await validateEnv();
 
 app.use(cors({ credentials: true, origin: true }));
 app.use(express.json());
