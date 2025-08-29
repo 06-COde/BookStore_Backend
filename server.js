@@ -13,8 +13,6 @@ const totalCpus = os.cpus().length;
 const PORT = process.env.PORT || 5000;
 const app = express();
 
-await validateEnv();
-
 app.use(cors({ credentials: true, origin: true }));
 app.use(express.json());
 app.use('/api/books', bookRoutes);   
@@ -26,11 +24,15 @@ app.get('/', (req, res) => {
 
 const startServer = async () => {
   if (cluster.isPrimary) {
+    await validateEnv();
+
     console.log(`Primary with pid ${process.pid} is running`);
     await connectDB();
+
     for (let i = 0; i < totalCpus; i++) {
       cluster.fork();
     }
+
     cluster.on('exit', (worker) => {
       console.error(`Worker ${worker.process.pid} died. Restarting...`);
       cluster.fork();
